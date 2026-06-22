@@ -1,0 +1,61 @@
+@startuml CU-04 Listar Numeros de Loteria
+
+title Caso de Uso: Listar Numeros de Loteria
+
+left to right direction
+
+rectangle "Sistema de Gestion de Loteria" {
+
+    usecase "CU-04\nListar Numeros\nde Loteria" as CU04
+
+    usecase "Filtrar por\nfecha de sorteo" as FILTFECHA
+
+    CU04 <.. FILTFECHA : <<extend>>
+}
+
+actor "Administrador" as Admin
+
+Admin --> CU04
+
+note right of CU04
+    **Identificador:** CU-04
+    **Objetivo:** Consultar los numeros
+    registrados para un sorteo en particular.
+    **Actores:**
+    - Principal: Administrador
+    - Secundarios: Ninguno
+    **Disparador:** El administrador selecciona
+    "Listar numeros".
+    **Precondiciones:**
+    - Ninguna
+    **Postcondiciones:**
+    - Sistema presenta la lista de numeros
+    registrados al administrador
+    **Prioridad:** Alta
+    **Frecuencia de Uso:** Alta
+    **Casos Relacionados:** CU-02, CU-03
+    (ambos incluyen este caso de uso)
+end note
+
+note bottom of CU04
+    **Flujo Principal:**
+    1. Selecciona "Listar numeros"
+    2. Sistema muestra todos los numeros
+       registrados con: Numero, Propietario,
+       Fecha sorteo
+
+    **Flujos Alternativos:**
+    FA-01: Filtra por fecha de sorteo,
+    sistema muestra solo los numeros
+    de esa fecha.
+
+    **Flujos de Excepcion:**
+    FE-01: No existen registros. Sistema
+    muestra "No hay numeros registrados".
+
+    **Reglas de Negocio:**
+    RN-01: Mostrar numero, propietario
+    y fecha del sorteo
+end note
+
+@enduml

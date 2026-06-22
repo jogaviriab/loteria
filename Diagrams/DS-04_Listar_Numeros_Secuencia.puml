@@ -1,0 +1,82 @@
+@startuml DS-04 Diagrama de Secuencia - Listar Numeros de Loteria
+
+title Diagrama de Secuencia: DS-04 Listar Numeros de Loteria
+
+actor "Administrador" as Admin
+
+boundary "ListarNumerosView\n<<boundary>>" as View
+control "ListarNumerosController\n<<control>>" as Controller
+entity "NumeroLoteria\n<<entity>>" as Model
+database "Base de Datos" as DB
+
+== Flujo Principal ==
+
+Admin -> View : 1. Selecciona "Listar numeros"
+activate View
+
+View -> Controller : listar_numeros()
+activate Controller
+
+Controller -> Model : obtener_todos()
+activate Model
+
+Model -> DB : SELECT numero, propietario, fecha\nFROM numero_loteria
+activate DB
+DB --> Model : lista de registros
+deactivate DB
+
+Model --> Controller : lista NumeroLoteria
+deactivate Model
+
+alt Sin registros (FE-01)
+
+    Controller --> View : Lista vacia
+    deactivate Controller
+    View --> Admin : Muestra mensaje\n"No hay numeros registrados"
+    deactivate View
+
+else Existen registros
+
+    Controller --> View : lista NumeroLoteria
+    deactivate Controller
+    View --> Admin : 2. Muestra tabla con:\nNumero, Propietario,\nFecha sorteo
+    deactivate View
+
+end
+
+== Flujo Alternativo FA-01: Filtrar por Fecha ==
+
+Admin -> View : Ingresa fecha de sorteo\ny selecciona "Filtrar"
+activate View
+
+View -> Controller : listar_numeros(fecha)
+activate Controller
+
+Controller -> Model : filtrar_por_fecha(fecha)
+activate Model
+
+Model -> DB : SELECT numero, propietario, fecha\nFROM numero_loteria\nWHERE fecha = ?
+activate DB
+DB --> Model : registros filtrados
+deactivate DB
+
+Model --> Controller : lista NumeroLoteria filtrada
+deactivate Model
+
+alt Sin registros para esa fecha
+
+    Controller --> View : Lista vacia
+    deactivate Controller
+    View --> Admin : Muestra mensaje\n"No hay numeros registrados\npara esa fecha"
+    deactivate View
+
+else Existen registros
+
+    Controller --> View : lista NumeroLoteria filtrada
+    deactivate Controller
+    View --> Admin : Muestra tabla filtrada con:\nNumero, Propietario,\nFecha sorteo
+    deactivate View
+
+end
+
+@enduml

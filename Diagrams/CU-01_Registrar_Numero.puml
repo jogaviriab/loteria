@@ -1,0 +1,70 @@
+@startuml CU-01 Registrar Numero de Loteria
+
+title Caso de Uso: Registrar Numero de Loteria
+
+left to right direction
+
+rectangle "Sistema de Gestion de Loteria" {
+
+    usecase "CU-01\nRegistrar Numero\nde Loteria" as CU01
+
+    usecase "Validar formato\n(4 cifras)" as VAL
+    usecase "Validar fecha\nno pasada" as VALFECHA
+    usecase "Verificar numero\nno duplicado" as DUP
+    usecase "Cancelar registro" as CANCEL
+
+    CU01 ..> VAL : <<include>>
+    CU01 ..> VALFECHA : <<include>>
+    CU01 ..> DUP : <<include>>
+    CU01 <.. CANCEL : <<extend>>
+}
+
+actor "Administrador" as Admin
+
+Admin --> CU01
+
+note right of CU01
+    **Identificador:** CU-01
+    **Objetivo:** Registrar un numero vendido
+    a un cliente para que participe en un sorteo.
+    **Actores:**
+    - Principal: Administrador
+    - Secundarios: Ninguno
+    **Disparador:** El administrador selecciona
+    "Registrar numero".
+    **Precondiciones:**
+    - Ninguna
+    **Postcondiciones:**
+    - Numero almacenado en el sistema
+    **Prioridad:** Alta
+    **Frecuencia de Uso:** Alta
+    **Casos Relacionados:** CU-04
+end note
+
+note bottom of CU01
+    **Flujo Principal:**
+    1. Selecciona "Registrar numero"
+    2. Sistema muestra formulario
+    3. Ingresa numero (4 cifras), propietario, fecha
+    4. Sistema valida formato (4 cifras)
+    5. Sistema valida fecha no pasada
+    6. Sistema verifica no duplicado para esa fecha
+    7. Sistema almacena el registro
+    8. Sistema muestra confirmacion
+
+    **Flujos Alternativos:**
+    FA-01: Administrador cancela, sistema
+    descarta datos y regresa al menu.
+
+    **Flujos de Excepcion:**
+    FE-01: Numero no tiene 4 cifras
+    FE-02: Fecha del sorteo ya paso
+    FE-03: Numero duplicado para esa fecha
+
+    **Reglas de Negocio:**
+    RN-01: Numero exactamente 4 cifras (0000-9999)
+    RN-02: Fecha del sorteo no puede ser pasada
+    RN-03: No duplicar numero en mismo sorteo
+end note
+
+@enduml

@@ -1,0 +1,75 @@
+@startuml CU-02 Actualizar Numero de Loteria
+
+title Caso de Uso: Actualizar Numero de Loteria
+
+left to right direction
+
+rectangle "Sistema de Gestion de Loteria" {
+
+    usecase "CU-02\nActualizar Numero\nde Loteria" as CU02
+
+    usecase "CU-04\nListar Numeros\nde Loteria" as CU04
+    usecase "Validar fecha\nno ha pasado" as VALFECHA
+    usecase "Validar formato\n(4 cifras)" as VAL
+    usecase "Verificar no\nduplicado" as DUP
+    usecase "Cancelar\nactualizacion" as CANCEL
+
+    CU02 ..> CU04 : <<include>>
+    CU02 ..> VALFECHA : <<include>>
+    CU02 ..> VAL : <<include>>
+    CU02 ..> DUP : <<include>>
+    CU02 <.. CANCEL : <<extend>>
+}
+
+actor "Administrador" as Admin
+
+Admin --> CU02
+
+note right of CU02
+    **Identificador:** CU-02
+    **Objetivo:** Corregir datos de un numero
+    de loteria si hubo un error en el registro.
+    **Actores:**
+    - Principal: Administrador
+    - Secundarios: Ninguno
+    **Disparador:** El administrador selecciona
+    un numero del listado y elige "Actualizar".
+    **Precondiciones:**
+    - Existe al menos un numero registrado
+    **Postcondiciones:**
+    - Registro actualizado con los nuevos datos
+    **Prioridad:** Media
+    **Frecuencia de Uso:** Media
+    **Casos Relacionados:** CU-01, CU-04
+end note
+
+note bottom of CU02
+    **Flujo Principal:**
+    1. El sistema muestra el listado de numeros (CU-04)
+    2. Selecciona el numero a actualizar
+    3. Sistema muestra datos actuales del registro
+    4. Modifica numero, propietario y/o fecha
+    5. Sistema valida que la fecha de sorteo no haya pasado
+    6. Sistema valida formato (4 cifras)
+    7. Sistema verifica no duplicado
+    8. Sistema actualiza registro
+    9. Sistema muestra confirmacion
+
+    **Flujos Alternativos:**
+    FA-01: Administrador cancela, sistema
+    descarta cambios y regresa al listado.
+
+    **Flujos de Excepcion:**
+    FE-01: Fecha de sorteo ya paso, no se
+    permite la modificacion
+    FE-02: Numero no tiene 4 cifras
+    FE-03: Numero duplicado para esa fecha
+
+    **Reglas de Negocio:**
+    RN-01: Solo modificar numeros cuya fecha
+    de sorteo aun no ha pasado
+    RN-02: Numero exactamente 4 cifras (0000-9999)
+    RN-03: No duplicar numero en mismo sorteo
+end note
+
+@enduml

@@ -1,0 +1,69 @@
+@startuml CU-03 Eliminar Numero de Loteria
+
+title Caso de Uso: Eliminar Numero de Loteria
+
+left to right direction
+
+rectangle "Sistema de Gestion de Loteria" {
+
+    usecase "CU-03\nEliminar Numero\nde Loteria" as CU03
+
+    usecase "CU-04\nListar Numeros\nde Loteria" as CU04
+    usecase "Validar fecha\nno ha pasado" as VALFECHA
+    usecase "Confirmar\neliminacion" as CONFIRMAR
+    usecase "Cancelar\neliminacion" as CANCEL
+
+    CU03 ..> CU04 : <<include>>
+    CU03 ..> VALFECHA : <<include>>
+    CU03 ..> CONFIRMAR : <<include>>
+    CU03 <.. CANCEL : <<extend>>
+}
+
+actor "Administrador" as Admin
+
+Admin --> CU03
+
+note right of CU03
+    **Identificador:** CU-03
+    **Objetivo:** Eliminar un numero de loteria
+    si el cliente cancela su compra.
+    **Actores:**
+    - Principal: Administrador
+    - Secundarios: Ninguno
+    **Disparador:** El administrador selecciona
+    un numero del listado y elige "Eliminar".
+    **Precondiciones:**
+    - Existe al menos un numero registrado
+    **Postcondiciones:**
+    - Registro eliminado del sistema
+    - Numero ya no aparece en el listado
+    **Prioridad:** Media
+    **Frecuencia de Uso:** Baja
+    **Casos Relacionados:** CU-01, CU-04
+end note
+
+note bottom of CU03
+    **Flujo Principal:**
+    1. El sistema muestra el listado de numeros (CU-04)
+    2. Selecciona el numero a eliminar
+    3. Sistema muestra datos del registro
+    4. Sistema valida que la fecha de sorteo no haya pasado
+    5. Sistema solicita confirmacion
+    6. Administrador confirma eliminacion
+    7. Sistema elimina registro
+    8. Sistema muestra confirmacion
+
+    **Flujos Alternativos:**
+    FA-01: Administrador cancela, sistema
+    no elimina y regresa al listado.
+
+    **Flujos de Excepcion:**
+    FE-01: Fecha de sorteo ya paso, no se
+    permite la eliminacion
+
+    **Reglas de Negocio:**
+    RN-01: Solo eliminar numeros cuya fecha
+    de sorteo aun no ha pasado
+end note
+
+@enduml

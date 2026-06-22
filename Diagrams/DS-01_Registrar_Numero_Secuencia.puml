@@ -1,0 +1,107 @@
+@startuml CU-01 Diagrama de Secuencia - Registrar Numero de Loteria
+
+title Diagrama de Secuencia: CU-01 Registrar Numero de Loteria
+
+actor "Administrador" as Admin
+
+boundary "RegistrarNumeroView\n<<boundary>>" as View
+control "RegistrarNumeroController\n<<control>>" as Controller
+entity "NumeroLoteria\n<<entity>>" as Model
+entity "NumeroLoteriaForm\n<<entity>>" as Form
+database "Base de Datos" as DB
+
+== Flujo Principal ==
+
+Admin -> View : 1. Selecciona "Registrar numero"
+activate View
+
+View --> Admin : 2. Muestra formulario\n(numero, propietario, fecha)
+deactivate View
+
+Admin -> View : 3. Ingresa numero (4 cifras),\npropietario, fecha y envia
+activate View
+
+View -> Form : 4. Crear instancia con datos POST
+activate Form
+
+Form -> Form : 5. is_valid()\nValidar formato (4 cifras)\ny fecha no pasada
+
+alt Datos invalidos (FE-01: Numero no tiene 4 cifras / FE-02: Fecha ya paso)
+
+    Form --> View : Retorna errores de validacion
+    deactivate Form
+    View --> Admin : Muestra formulario\ncon errores
+    deactivate View
+
+else Datos validos
+
+    Form --> View : Formulario valido
+    deactivate Form
+
+    View -> Controller : 6. registrar_numero(datos)
+    activate Controller
+
+    Controller -> Model : 7. verificar_duplicado(numero, fecha)
+    activate Model
+
+    Model -> DB : SELECT numero WHERE\nnumero = ? AND fecha = ?
+    activate DB
+    DB --> Model : resultado consulta
+    deactivate DB
+
+    alt Numero duplicado (FE-03: Numero duplicado para esa fecha)
+
+        Model --> Controller : Numero ya existe
+        deactivate Model
+        Controller --> View : Error: numero duplicado
+        deactivate Controller
+        View --> Admin : Muestra formulario\ncon error "Numero duplicado\npara esa fecha"
+        deactivate View
+
+    else Numero no duplicado
+
+        Model --> Controller : Numero disponible
+        deactivate Model
+
+        Controller -> Model : 8. crear(numero, propietario, fecha)
+        activate Model
+
+        Model -> DB : INSERT INTO numero_loteria\n(numero, propietario, fecha)
+        activate DB
+
+        alt Error al persistir
+
+            DB --> Model : Error de base de datos
+            deactivate DB
+            Model --> Controller : Excepcion al guardar
+            deactivate Model
+            Controller --> View : Error al registrar
+            deactivate Controller
+            View --> Admin : Muestra mensaje\n"Error al guardar el registro"
+            deactivate View
+
+        else Persistencia exitosa
+
+            DB --> Model : Registro creado OK
+            deactivate DB
+            Model --> Controller : NumeroLoteria guardado
+            deactivate Model
+            Controller --> View : Registro exitoso
+            deactivate Controller
+            View --> Admin : 9. Muestra confirmacion\n"Numero registrado exitosamente"
+            deactivate View
+
+        end
+
+    end
+
+end
+
+== Flujo Alternativo FA-01: Cancelar Registro ==
+
+Admin -> View : Selecciona "Cancelar"
+activate View
+View --> Admin : Descarta datos\ny regresa al menu
+deactivate View
+
+@enduml

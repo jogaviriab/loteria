@@ -1,0 +1,167 @@
+@startuml DS-02 Diagrama de Secuencia - Actualizar Numero de Loteria
+
+title Diagrama de Secuencia: DS-02 Actualizar Numero de Loteria
+
+actor "Administrador" as Admin
+
+boundary "ListarNumerosView\n<<boundary>>" as ListView
+boundary "ActualizarNumeroView\n<<boundary>>" as View
+control "ListarNumerosController\n<<control>>" as ListController
+control "ActualizarNumeroController\n<<control>>" as Controller
+entity "NumeroLoteria\n<<entity>>" as Model
+entity "NumeroLoteriaForm\n<<entity>>" as Form
+database "Base de Datos" as DB
+
+== Flujo Principal ==
+
+Admin -> ListView : 1. Accede al listado de numeros (CU-04)
+activate ListView
+
+ListView -> ListController : listar_numeros()
+activate ListController
+
+ListController -> Model : obtener_todos()
+activate Model
+Model -> DB : SELECT * FROM numero_loteria
+activate DB
+DB --> Model : lista de registros
+deactivate DB
+Model --> ListController : lista NumeroLoteria
+deactivate Model
+
+ListController --> ListView : lista NumeroLoteria
+deactivate ListController
+
+ListView --> Admin : Muestra listado de numeros
+deactivate ListView
+
+Admin -> ListView : 2. Selecciona numero y elige "Actualizar"
+activate ListView
+
+ListView -> Model : obtener_por_id(id)
+activate Model
+Model -> DB : SELECT * FROM numero_loteria\nWHERE id = ?
+activate DB
+DB --> Model : registro encontrado
+deactivate DB
+Model --> ListView : NumeroLoteria
+deactivate Model
+
+ListView -> View : redirigir a formulario\ncon datos actuales
+activate View
+deactivate ListView
+
+View --> Admin : 3. Muestra formulario\ncon datos actuales\n(numero, propietario, fecha)
+deactivate View
+
+Admin -> View : 4. Modifica numero, propietario\ny/o fecha y envia
+activate View
+
+View -> Form : Crear instancia con datos POST
+activate Form
+
+Form -> Form : is_valid()\nValidar formato (4 cifras)
+
+alt Datos invalidos (FE-02: Numero no tiene 4 cifras)
+
+    Form --> View : Retorna errores de validacion
+    deactivate Form
+    View --> Admin : Muestra formulario\ncon errores
+    deactivate View
+
+else Datos validos
+
+    Form --> View : Formulario valido
+    deactivate Form
+
+    View -> Controller : actualizar_numero(id, datos)
+    activate Controller
+
+    Controller -> Model : 5. validar_fecha_no_pasada(fecha_sorteo)
+    activate Model
+
+    Model -> Model : comparar fecha_sorteo\ncon fecha actual
+
+    alt Fecha de sorteo ya paso (FE-01)
+
+        Model --> Controller : Fecha ya paso
+        deactivate Model
+        Controller --> View : Error: fecha ya paso
+        deactivate Controller
+        View --> Admin : Muestra mensaje\n"No se permite modificar,\nla fecha de sorteo ya paso"
+        deactivate View
+
+    else Fecha no ha pasado
+
+        Model --> Controller : Fecha valida
+        deactivate Model
+
+        Controller -> Model : 6. verificar_duplicado(numero, fecha, id)
+        activate Model
+
+        Model -> DB : SELECT numero WHERE\nnumero = ? AND fecha = ?\nAND id != ?
+        activate DB
+        DB --> Model : resultado consulta
+        deactivate DB
+
+        alt Numero duplicado (FE-03: Duplicado para esa fecha)
+
+            Model --> Controller : Numero ya existe\npara esa fecha
+            deactivate Model
+            Controller --> View : Error: numero duplicado
+            deactivate Controller
+            View --> Admin : Muestra formulario\ncon error "Numero duplicado\npara esa fecha"
+            deactivate View
+
+        else Numero no duplicado
+
+            Model --> Controller : Sin duplicados
+            deactivate Model
+
+            Controller -> Model : 7. actualizar(id, numero,\npropietario, fecha)
+            activate Model
+
+            Model -> DB : UPDATE numero_loteria\nSET numero = ?, propietario = ?,\nfecha = ? WHERE id = ?
+            activate DB
+
+            alt Error al persistir
+
+                DB --> Model : Error de base de datos
+                deactivate DB
+                Model --> Controller : Excepcion al actualizar
+                deactivate Model
+                Controller --> View : Error al actualizar
+                deactivate Controller
+                View --> Admin : Muestra mensaje\n"Error al actualizar el registro"
+                deactivate View
+
+            else Persistencia exitosa
+
+                DB --> Model : Registro actualizado OK
+                deactivate DB
+                Model --> Controller : NumeroLoteria actualizado
+                deactivate Model
+                Controller --> View : Actualizacion exitosa
+                deactivate Controller
+                View --> Admin : 8. Muestra confirmacion\n"Numero actualizado exitosamente"
+                deactivate View
+
+            end
+
+        end
+
+    end
+
+end
+
+== Flujo Alternativo FA-01: Cancelar Actualizacion ==
+
+Admin -> View : Selecciona "Cancelar"
+activate View
+View -> ListView : Redirigir al listado
+activate ListView
+deactivate View
+ListView --> Admin : Descarta cambios\ny muestra listado
+deactivate ListView
+
+@enduml

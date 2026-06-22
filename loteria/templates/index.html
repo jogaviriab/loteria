@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Sistema de Loteria{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 40px 0;">
+    <h1 style="font-size: 28px; margin-bottom: 10px; color: #2c3e50;">Sistema de Gestion de Resultados de Loteria</h1>
+    <p style="color: #666; margin-bottom: 40px;">Administra los numeros de loteria vendidos para cada sorteo.</p>
+
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'loteria:registrar' %}" style="display: block; padding: 30px; background: #fff; border-radius: 8px; text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 200px; transition: transform 0.2s;">
+            <div style="font-size: 36px; margin-bottom: 10px;">&#10133;</div>
+            <strong>Registrar Numero</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 8px;">Agregar un nuevo numero al sistema</p>
+        </a>
+
+        <a href="{% url 'loteria:listar' %}" style="display: block; padding: 30px; background: #fff; border-radius: 8px; text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 200px; transition: transform 0.2s;">
+            <div style="font-size: 36px; margin-bottom: 10px;">&#128203;</div>
+            <strong>Listar Numeros</strong>
+            <p style="font-size: 13px; color: #666; margin-top: 8px;">Ver todos los numeros registrados</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

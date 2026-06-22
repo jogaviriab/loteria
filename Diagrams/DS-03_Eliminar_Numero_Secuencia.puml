@@ -1,0 +1,139 @@
+@startuml DS-03 Diagrama de Secuencia - Eliminar Numero de Loteria
+
+title Diagrama de Secuencia: DS-03 Eliminar Numero de Loteria
+
+actor "Administrador" as Admin
+
+boundary "ListarNumerosView\n<<boundary>>" as ListView
+boundary "EliminarNumeroView\n<<boundary>>" as View
+control "ListarNumerosController\n<<control>>" as ListController
+control "EliminarNumeroController\n<<control>>" as Controller
+entity "NumeroLoteria\n<<entity>>" as Model
+database "Base de Datos" as DB
+
+== Flujo Principal ==
+
+Admin -> ListView : 1. Accede al listado de numeros (CU-04)
+activate ListView
+
+ListView -> ListController : listar_numeros()
+activate ListController
+
+ListController -> Model : obtener_todos()
+activate Model
+Model -> DB : SELECT * FROM numero_loteria
+activate DB
+DB --> Model : lista de registros
+deactivate DB
+Model --> ListController : lista NumeroLoteria
+deactivate Model
+
+ListController --> ListView : lista NumeroLoteria
+deactivate ListController
+
+ListView --> Admin : Muestra listado de numeros
+deactivate ListView
+
+Admin -> ListView : 2. Selecciona numero y elige "Eliminar"
+activate ListView
+
+ListView -> Model : obtener_por_id(id)
+activate Model
+Model -> DB : SELECT * FROM numero_loteria\nWHERE id = ?
+activate DB
+DB --> Model : registro encontrado
+deactivate DB
+Model --> ListView : NumeroLoteria
+deactivate Model
+
+ListView -> View : redirigir con datos del registro
+activate View
+deactivate ListView
+
+View --> Admin : 3. Muestra datos del registro
+deactivate View
+
+Admin -> View : 4. Selecciona "Eliminar"
+activate View
+
+View -> Controller : eliminar_numero(id)
+activate Controller
+
+Controller -> Model : 5. validar_fecha_no_pasada(id)
+activate Model
+
+Model -> Model : comparar fecha_sorteo\ncon fecha actual
+
+alt Fecha de sorteo ya paso (FE-01)
+
+    Model --> Controller : Fecha ya paso
+    deactivate Model
+    Controller --> View : Error: fecha ya paso
+    deactivate Controller
+    View --> Admin : Muestra mensaje\n"No se permite eliminar,\nla fecha de sorteo ya paso"
+    deactivate View
+
+else Fecha no ha pasado
+
+    Model --> Controller : Fecha valida
+    deactivate Model
+
+    Controller --> View : Solicitar confirmacion
+    deactivate Controller
+
+    View --> Admin : 6. Muestra dialogo\n"Confirmar eliminacion?"
+    deactivate View
+
+    alt Flujo Alternativo FA-01: Cancelar Eliminacion
+
+        Admin -> View : Selecciona "Cancelar"
+        activate View
+        View -> ListView : Redirigir al listado
+        activate ListView
+        deactivate View
+        ListView --> Admin : No elimina,\nmuestra listado
+        deactivate ListView
+
+    else Administrador confirma eliminacion
+
+        Admin -> View : 7. Confirma eliminacion
+        activate View
+
+        View -> Controller : confirmar_eliminacion(id)
+        activate Controller
+
+        Controller -> Model : 8. eliminar(id)
+        activate Model
+
+        Model -> DB : DELETE FROM numero_loteria\nWHERE id = ?
+        activate DB
+
+        alt Error al persistir
+
+            DB --> Model : Error de base de datos
+            deactivate DB
+            Model --> Controller : Excepcion al eliminar
+            deactivate Model
+            Controller --> View : Error al eliminar
+            deactivate Controller
+            View --> Admin : Muestra mensaje\n"Error al eliminar el registro"
+            deactivate View
+
+        else Eliminacion exitosa
+
+            DB --> Model : Registro eliminado OK
+            deactivate DB
+            Model --> Controller : Eliminacion completada
+            deactivate Model
+            Controller --> View : Eliminacion exitosa
+            deactivate Controller
+            View --> Admin : 9. Muestra confirmacion\n"Numero eliminado exitosamente"
+            deactivate View
+
+        end
+
+    end
+
+end
+
+@enduml
