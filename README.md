@@ -2,7 +2,10 @@
 
 ## Jorge Humberto Gaviria Botero
 
+link pagina: https://jorgegaviria.pythonanywhere.com/
+
 ### Modelo verbal
+
 Una empresa de lotería organiza sorteos semanales. En cada sorteo se define un número ganador de 4 cifras (del 0000 al 9999). Los clientes compran boletas que contienen un número de 4 cifras, el cual participa en el sorteo de una fecha determinada.
 
 El sistema administra los números vendidos. Cada número tiene un propietario (la persona que lo compró) y pertenece a un sorteo específico (identificado por su fecha).
