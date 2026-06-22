@@ -1,4 +1,4 @@
-#Implementación loteria
+# Implementación loteria
 
 ## Jorge Humberto Gaviria Botero
 
