@@ -48,7 +48,7 @@ CU-04: Listar Numeros de Loteria
 | CP-028 | CU-04       | Listar sin registros muestra mensaje vacio (FE-01)       | Negativo |
 | CP-029 | CU-04       | Filtrar por fecha muestra solo esa fecha (FA-01)         | Positivo |
 | CP-030 | CU-04       | Filtrar por fecha sin resultados muestra mensaje vacio   | Negativo |
-| CP-031 | CU-04       | Listado muestra todos los campos requeridos (RN-01)      | Positivo |
+| CP-031 | CU-04       | Listado muestra numero, propietario y fecha (RN-01)      | Positivo |
 """
 
 from datetime import date, timedelta
@@ -71,7 +71,6 @@ class NumeroLoteriaModelTest(TestCase):
             'numero': 4521,
             'propietario': 'Juan Perez',
             'fecha': self.fecha_futura,
-            'estado': 'activo',
         }
 
     def test_cp001_crear_numero_valido(self):
@@ -80,7 +79,6 @@ class NumeroLoteriaModelTest(TestCase):
         self.assertEqual(numero.numero, 4521)
         self.assertEqual(numero.propietario, 'Juan Perez')
         self.assertEqual(numero.fecha, self.fecha_futura)
-        self.assertEqual(numero.estado, 'activo')
 
     def test_cp002_numero_valor_minimo(self):
         """CP-002: Numero con valor minimo (0000) se crea correctamente."""
@@ -167,7 +165,6 @@ class NumeroLoteriaFormTest(TestCase):
             numero=4521,
             propietario='Maria Lopez',
             fecha=self.fecha_futura,
-            estado='activo',
         )
         form = NumeroLoteriaForm(data=self.datos_validos)
         self.assertFalse(form.is_valid())
@@ -182,7 +179,6 @@ class NumeroLoteriaFormTest(TestCase):
             numero=4521,
             propietario='Maria Lopez',
             fecha=self.fecha_futura,
-            estado='activo',
         )
         self.datos_validos['fecha'] = self.fecha_futura + timedelta(days=7)
         form = NumeroLoteriaForm(data=self.datos_validos)
@@ -248,7 +244,6 @@ class RegistrarNumeroViewTest(TestCase):
         numero = NumeroLoteria.objects.first()
         self.assertEqual(numero.numero, 4521)
         self.assertEqual(numero.propietario, 'Juan Perez')
-        self.assertEqual(numero.estado, 'activo')
 
     def test_cp010_post_valido_muestra_mensaje_exito(self):
         """CP-010: Vista POST valido muestra mensaje de exito."""
@@ -284,7 +279,6 @@ class RegistrarNumeroViewTest(TestCase):
             numero=4521,
             propietario='Maria Lopez',
             fecha=self.fecha_futura,
-            estado='activo',
         )
         response = self.client.post(self.url, data=self.datos_validos)
         self.assertEqual(response.status_code, 200)
@@ -307,7 +301,6 @@ class ActualizarNumeroViewTest(TestCase):
             numero=4521,
             propietario='Juan Perez',
             fecha=self.fecha_futura,
-            estado='activo',
         )
         self.url = reverse('loteria:actualizar', args=[self.numero_obj.pk])
         self.datos_actualizados = {
@@ -338,7 +331,6 @@ class ActualizarNumeroViewTest(TestCase):
             numero=1234,
             propietario='Ana Ruiz',
             fecha=self.fecha_pasada,
-            estado='activo',
         )
         url_pasado = reverse('loteria:actualizar', args=[numero_pasado.pk])
         response = self.client.get(url_pasado, follow=True)
@@ -355,7 +347,6 @@ class ActualizarNumeroViewTest(TestCase):
             numero=4521,
             propietario='Maria Lopez',
             fecha=otra_fecha,
-            estado='activo',
         )
         datos = self.datos_actualizados.copy()
         datos['fecha'] = otra_fecha.isoformat()
@@ -411,7 +402,6 @@ class EliminarNumeroViewTest(TestCase):
             numero=4521,
             propietario='Juan Perez',
             fecha=self.fecha_futura,
-            estado='activo',
         )
         self.url = reverse('loteria:eliminar', args=[self.numero_obj.pk])
 
@@ -436,7 +426,6 @@ class EliminarNumeroViewTest(TestCase):
             numero=1234,
             propietario='Ana Ruiz',
             fecha=self.fecha_pasada,
-            estado='activo',
         )
         url_pasado = reverse('loteria:eliminar', args=[numero_pasado.pk])
         response = self.client.get(url_pasado, follow=True)
@@ -450,7 +439,6 @@ class EliminarNumeroViewTest(TestCase):
             numero=5678,
             propietario='Luis Torres',
             fecha=self.fecha_pasada,
-            estado='activo',
         )
         url_pasado = reverse('loteria:eliminar', args=[numero_pasado.pk])
         response = self.client.post(url_pasado, follow=True)
@@ -491,13 +479,11 @@ class ListarNumerosViewTest(TestCase):
             numero=1234,
             propietario='Juan Perez',
             fecha=self.fecha1,
-            estado='activo',
         )
         self.numero2 = NumeroLoteria.objects.create(
             numero=5678,
             propietario='Maria Lopez',
             fecha=self.fecha2,
-            estado='activo',
         )
 
     def test_cp027_listar_todos(self):
@@ -532,14 +518,12 @@ class ListarNumerosViewTest(TestCase):
         self.assertContains(response, 'No hay numeros registrados')
 
     def test_cp031_muestra_todos_los_campos(self):
-        """CP-031: El listado muestra numero, propietario, fecha y estado (RN-01)."""
+        """CP-031: El listado muestra numero, propietario y fecha (RN-01)."""
         response = self.client.get(self.url)
         # Verificar cabeceras de tabla
         self.assertContains(response, 'Numero')
         self.assertContains(response, 'Propietario')
         self.assertContains(response, 'Fecha')
-        self.assertContains(response, 'Estado')
         # Verificar datos del primer registro
         self.assertContains(response, '1234')
         self.assertContains(response, 'Juan Perez')
-        self.assertContains(response, 'Activo')

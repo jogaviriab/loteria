@@ -36,6 +36,7 @@ note right of CU01
     - Ninguna
     **Postcondiciones:**
     - Numero almacenado en el sistema
+
     **Prioridad:** Alta
     **Frecuencia de Uso:** Alta
     **Casos Relacionados:** CU-04

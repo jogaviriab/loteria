@@ -60,15 +60,6 @@
     tr:hover {
         background-color: #f9f9f9;
     }
-    .badge {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-    .badge-activo { background-color: #d4edda; color: #155724; }
-    .badge-ganador { background-color: #fff3cd; color: #856404; }
-    .badge-no_ganador { background-color: #f8d7da; color: #721c24; }
     .actions a {
         margin-right: 8px;
         text-decoration: none;
@@ -119,7 +110,6 @@
                     <th>Numero</th>
                     <th>Propietario</th>
                     <th>Fecha Sorteo</th>
-                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -129,7 +119,6 @@
                     <td><strong>{{ n.numero|stringformat:"04d" }}</strong></td>
                     <td>{{ n.propietario }}</td>
                     <td>{{ n.fecha }}</td>
-                    <td><span class="badge badge-{{ n.estado }}">{{ n.get_estado_display }}</span></td>
                     <td class="actions">
                         <a href="{% url 'loteria:actualizar' n.pk %}" class="edit">Editar</a>
                         <a href="{% url 'loteria:eliminar' n.pk %}" class="delete">Eliminar</a>

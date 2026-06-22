@@ -4,12 +4,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class NumeroLoteria(models.Model):
 
-    ESTADO_CHOICES = [
-        ('activo', 'Activo'),
-        ('ganador', 'Ganador'),
-        ('no_ganador', 'No ganador'),
-    ]
-
     numero = models.PositiveIntegerField(
         verbose_name="Numero de Loteria",
         validators=[
@@ -25,13 +19,6 @@ class NumeroLoteria(models.Model):
 
     fecha = models.DateField(
         verbose_name="Fecha del Sorteo"
-    )
-
-    estado = models.CharField(
-        max_length=10,
-        choices=ESTADO_CHOICES,
-        default='activo',
-        verbose_name="Estado"
     )
 
     class Meta:

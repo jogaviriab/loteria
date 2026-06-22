@@ -18,7 +18,7 @@ El administrador selecciona "Listar numeros".
 
 ## Flujo Principal
 1. El administrador selecciona "Listar numeros".
-2. El sistema muestra todos los numeros registrados con: Numero, Propietario, Fecha del sorteo, Estado.
+2. El sistema muestra todos los numeros registrados con: Numero, Propietario, Fecha del sorteo.
 
 ## Flujos Alternativos
 
@@ -36,7 +36,7 @@ El administrador selecciona "Listar numeros".
 - El sistema presenta la informacion solicitada al administrador.
 
 ## Reglas de Negocio
-- RN-01: Mostrar numero, propietario, fecha del sorteo y estado.
+- RN-01: Mostrar numero, propietario y fecha del sorteo.
 
 ## Prioridad
 Alta

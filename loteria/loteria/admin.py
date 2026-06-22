@@ -4,6 +4,6 @@ from .models import NumeroLoteria
 
 @admin.register(NumeroLoteria)
 class NumeroLoteriaAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'propietario', 'fecha', 'estado')
-    list_filter = ('estado', 'fecha')
+    list_display = ('numero', 'propietario', 'fecha')
+    list_filter = ('fecha',)
     search_fields = ('numero', 'propietario')

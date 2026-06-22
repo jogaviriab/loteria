@@ -23,7 +23,7 @@ El administrador selecciona la opcion "Registrar numero".
 4. El sistema valida que el numero tenga exactamente 4 cifras.
 5. El sistema valida que la fecha del sorteo no haya pasado.
 6. El sistema verifica que el numero no este registrado para esa misma fecha.
-7. El sistema almacena el registro con estado "Activo".
+7. El sistema almacena el registro.
 8. El sistema muestra mensaje de confirmacion "Numero registrado exitosamente".
 
 ## Flujos Alternativos
@@ -41,7 +41,7 @@ El administrador selecciona la opcion "Registrar numero".
 | FE-03 | El numero ya existe para la misma fecha de sorteo. El sistema muestra error "Numero duplicado". |
 
 ## Postcondiciones
-- El numero queda almacenado en el sistema con estado "Activo".
+- El numero queda almacenado en el sistema.
 
 ## Reglas de Negocio
 - RN-01: Todo numero debe ser de exactamente 4 cifras (0000-9999).
